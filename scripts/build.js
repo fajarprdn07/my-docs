@@ -54,7 +54,7 @@ async function processPDF(filePath) {
           const res = execSync('tesseract "' + path.join(tmp, p) + '" stdout -l ' + TESSERACT_LANG + ' --psm 6 2>/dev/null', { timeout: 120000 }).toString();
           ocr += res + '\n\n';
         } catch (e) {
-          console.log('     Warning: failed page OCR ' + p);
+          console.log('     Warning: OCR page failed ' + p);
         }
       }
       console.log('     -> OCR done (' + pages.length + ' pages)');
@@ -89,132 +89,115 @@ function processImage(filePath) {
 function makeIndexHTML(docs) {
   const docList = docs.map(d => {
     const icon = d.type === 'pdf' ? '📄' : d.type === 'md' ? '📝' : '🖼️';
-    return '<div class="card" id="card-' + d.slug + '">' +
+    return '<div class="card">' +
       '<div class="icon">' + icon + '</div>' +
       '<div class="info">' +
         '<a href="view/' + d.slug + '.html">' + escapeHtml(d.filename) + '</a>' +
         '<div class="meta">' + (d.pages ? d.pages + ' pages · ' : '') + d.method.toUpperCase() + '</div>' +
-        '<div class="snippet" id="snip-' + d.slug + '"></div>' +
       '</div></div>';
   }).join('\n');
 
-  return `<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document Repository</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; color:#333; }
-    .wrap { max-width:900px; margin:0 auto; padding:2.5rem 1rem; }
-    h1 { font-size:26px; margin-bottom:6px; color:#111; }
-    .subtitle { color:#666; margin-bottom:1.5rem; font-size:14px; }
-    .search-box { width:100%; padding:14px 18px; font-size:16px; border:2px solid #ccd0d5; border-radius:8px; margin-bottom:1rem; outline:none; transition:border 0.2s; }
-    .search-box:focus { border-color:#0066cc; }
-    .status-bar { font-size:13px; color:#666; margin-bottom:1rem; min-height:20px; }
-    .card { display:flex; align-items:flex-start; gap:1rem; background:#fff; padding:1.2rem; border-radius:8px; margin-bottom:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
-    .icon { font-size:2rem; line-height:1; }
-    .info { flex:1; }
-    .info a { font-weight:600; color:#0066cc; text-decoration:none; font-size:17px; }
-    .info a:hover { text-decoration:underline; }
-    .meta { font-size:12px; color:#888; margin-top:4px; }
-    .snippet { font-size:13px; color:#444; margin-top:8px; line-height:1.5; background:#f9f9f9; padding:6px 10px; border-radius:4px; display:none; }
-    .snippet mark { background:#ffe58f; padding:0 2px; border-radius:2px; font-weight:bold; }
-    .empty { text-align:center; padding:3rem; color:#888; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>📚 Document Repository</h1>
-    <p class="subtitle">${docs.length} Dokumen Tersedia · Full-Text Search · AI-Ready</p>
-    <input type="text" class="search-box" id="search" placeholder="Cari kalimat atau kata di dalam dokumen..." autocomplete="off">
-    <div class="status-bar" id="status"></div>
-    <div id="list">${docList}</div>
-  </div>
-
-  <script>
-    let docsData = [];
-    fetch('docs-data.json')
-      .then(r => r.json())
-      .then(data => { docsData = data; })
-      .catch(e => console.error('Gagal memuat index data:', e));
-
-    const searchInput = document.getElementById('search');
-    const statusEl = document.getElementById('status');
-    const listEl = document.getElementById('list');
-
-    searchInput.addEventListener('input', function() {
-      const q = this.value.trim().toLowerCase();
-      if (!q || q.length < 2) {
-        statusEl.textContent = '';
-        renderDocs(docsData, null);
-        return;
-      }
-
-      const matches = [];
-      docsData.forEach(doc => {
-        const textLower = (doc.text || '').toLowerCase();
-        const titleLower = (doc.filename || '').toLowerCase();
-        const pos = textLower.indexOf(q);
-
-        if (pos !== -1 || titleLower.indexOf(q) !== -1) {
-          let snippet = '';
-          if (pos !== -1) {
-            const start = Math.max(0, pos - 60);
-            const end = Math.min(doc.text.length, pos + q.length + 60);
-            snippet = (start > 0 ? '...' : '') + doc.text.substring(start, end) + (end < doc.text.length ? '...' : '');
-          }
-          matches.push({ doc: doc, snippet: snippet });
-        }
-      });
-
-      statusEl.textContent = 'Ditemukan ' + matches.length + ' dokumen untuk "' + q + '"';
-      renderSearchResults(matches, q);
-    });
-
-    function renderDocs(items, q) {
-      if (!items.length) {
-        listEl.innerHTML = '<div class="empty">Tidak ada dokumen.</div>';
-        return;
-      }
-      listEl.innerHTML = items.map(d => {
-        const icon = d.type === 'pdf' ? '📄' : d.type === 'md' ? '📝' : '🖼️';
-        return '<div class="card">' +
-          '<div class="icon">' + icon + '</div>' +
-          '<div class="info">' +
-            '<a href="view/' + d.slug + '.html">' + d.filename + '</a>' +
-            '<div class="meta">' + (d.pages ? d.pages + ' pages · ' : '') + d.method.toUpperCase() + '</div>' +
-          '</div></div>';
-      }).join('');
-    }
-
-    function renderSearchResults(results, query) {
-      if (!results.length) {
-        listEl.innerHTML = '<div class="empty">Tidak ditemukan kalimat "' + query + '" di dokumen manapun.</div>';
-        return;
-      }
-      const regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + ')', 'gi');
-      listEl.innerHTML = results.map(item => {
-        const d = item.doc;
-        const icon = d.type === 'pdf' ? '📄' : d.type === 'md' ? '📝' : '🖼️';
-        let snipHtml = '';
-        if (item.snippet) {
-          const highlighted = item.snippet.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(regex, '<mark>$1</mark>');
-          snipHtml = '<div class="snippet" style="display:block;">' + highlighted + '</div>';
-        }
-        return '<div class="card">' +
-          '<div class="icon">' + icon + '</div>' +
-          '<div class="info">' +
-            '<a href="view/' + d.slug + '.html">' + d.filename + '</a>' +
-            '<div class="meta">' + (d.pages ? d.pages + ' pages · ' : '') + d.method.toUpperCase() + '</div>' +
-            snipHtml +
-          '</div></div>';
-      }).join('');
-    }
-  </script>
-</body>
-</html>`;
+  return '<!DOCTYPE html>' +
+'<html lang="id">' +
+'<head>' +
+'  <meta charset="UTF-8">' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'  <title>Document Repository</title>' +
+'  <style>' +
+'    * { margin:0; padding:0; box-sizing:border-box; }' +
+'    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; color:#333; }' +
+'    .wrap { max-width:900px; margin:0 auto; padding:2.5rem 1rem; }' +
+'    h1 { font-size:26px; margin-bottom:6px; color:#111; }' +
+'    .subtitle { color:#666; margin-bottom:1.5rem; font-size:14px; }' +
+'    .search-box { width:100%; padding:14px 18px; font-size:16px; border:2px solid #ccd0d5; border-radius:8px; margin-bottom:1rem; outline:none; }' +
+'    .search-box:focus { border-color:#0066cc; }' +
+'    .status-bar { font-size:13px; color:#666; margin-bottom:1rem; min-height:20px; }' +
+'    .card { display:flex; align-items:flex-start; gap:1rem; background:#fff; padding:1.2rem; border-radius:8px; margin-bottom:0.75rem; box-shadow:0 1px 3px rgba(0,0,0,0.08); }' +
+'    .icon { font-size:2rem; line-height:1; }' +
+'    .info { flex:1; }' +
+'    .info a { font-weight:600; color:#0066cc; text-decoration:none; font-size:17px; }' +
+'    .info a:hover { text-decoration:underline; }' +
+'    .meta { font-size:12px; color:#888; margin-top:4px; }' +
+'    .snippet { font-size:13px; color:#444; margin-top:8px; line-height:1.5; background:#f9f9f9; padding:6px 10px; border-radius:4px; }' +
+'    .snippet mark { background:#ffe58f; padding:0 2px; border-radius:2px; font-weight:bold; }' +
+'    .empty { text-align:center; padding:3rem; color:#888; }' +
+'  </style>' +
+'</head>' +
+'<body>' +
+'  <div class="wrap">' +
+'    <h1>📚 Document Repository</h1>' +
+'    <p class="subtitle">' + docs.length + ' Dokumen Tersedia · Full-Text Search · AI-Ready</p>' +
+'    <input type="text" class="search-box" id="search" placeholder="Cari kata atau kalimat di dalam dokumen..." autocomplete="off">' +
+'    <div class="status-bar" id="status"></div>' +
+'    <div id="list">' + docList + '</div>' +
+'  </div>' +
+'  <script>' +
+'    var docsData = [];' +
+'    fetch("docs-data.json")' +
+'      .then(function(r){ return r.json(); })' +
+'      .then(function(data){ docsData = data; })' +
+'      .catch(function(e){ console.error(e); });' +
+'    document.getElementById("search").addEventListener("input", function() {' +
+'      var q = this.value.trim().toLowerCase();' +
+'      var statusEl = document.getElementById("status");' +
+'      var listEl = document.getElementById("list");' +
+'      if (!q || q.length < 2) {' +
+'        statusEl.textContent = "";' +
+'        renderAll();' +
+'        return;' +
+'      }' +
+'      var matches = [];' +
+'      docsData.forEach(function(doc) {' +
+'        var textLower = (doc.text || "").toLowerCase();' +
+'        var titleLower = (doc.filename || "").toLowerCase();' +
+'        var pos = textLower.indexOf(q);' +
+'        if (pos !== -1 || titleLower.indexOf(q) !== -1) {' +
+'          var snippet = "";' +
+'          if (pos !== -1) {' +
+'            var start = Math.max(0, pos - 60);' +
+'            var end = Math.min(doc.text.length, pos + q.length + 60);' +
+'            snippet = (start > 0 ? "..." : "") + doc.text.substring(start, end) + (end < doc.text.length ? "..." : "");' +
+'          }' +
+'          matches.push({ doc: doc, snippet: snippet });' +
+'        }' +
+'      });' +
+'      statusEl.textContent = "Ditemukan " + matches.length + " dokumen untuk \\"" + q + "\\"";' +
+'      if (!matches.length) {' +
+'        listEl.innerHTML = \'<div class="empty">Tidak ditemukan hasil.</div>\';' +
+'        return;' +
+'      }' +
+'      listEl.innerHTML = matches.map(function(item) {' +
+'        var d = item.doc;' +
+'        var icon = d.type === "pdf" ? "📄" : d.type === "md" ? "📝" : "🖼️";' +
+'        var snipHtml = "";' +
+'        if (item.snippet) {' +
+'          var safeSnippet = item.snippet.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");' +
+'          snipHtml = \'<div class="snippet">\' + safeSnippet + \'</div>\';' +
+'        }' +
+'        return \'<div class="card">\' +' +
+'          \'<div class="icon">\' + icon + \'</div>\' +' +
+'          \'<div class="info">\' +' +
+'            \'<a href="view/\' + d.slug + \'.html">\' + d.filename + \'</a>\' +' +
+'            \'<div class="meta">\' + (d.pages ? d.pages + " pages · " : "") + d.method.toUpperCase() + \'</div>\' +' +
+'            snipHtml +' +
+'          \'</div></div>\';' +
+'      }).join("");' +
+'    });' +
+'    function renderAll() {' +
+'      var listEl = document.getElementById("list");' +
+'      listEl.innerHTML = docsData.map(function(d) {' +
+'        var icon = d.type === "pdf" ? "📄" : d.type === "md" ? "📝" : "🖼️";' +
+'        return \'<div class="card">\' +' +
+'          \'<div class="icon">\' + icon + \'</div>\' +' +
+'          \'<div class="info">\' +' +
+'            \'<a href="view/\' + d.slug + \'.html">\' + d.filename + \'</a>\' +' +
+'            \'<div class="meta">\' + (d.pages ? d.pages + " pages · " : "") + d.method.toUpperCase() + \'</div>\' +' +
+'          \'</div></div>\';' +
+'      }).join("");' +
+'    }' +
+'  </script>' +
+'</body>' +
+'</html>';
 }
 
 function makeViewerHTML(doc) {
@@ -227,31 +210,31 @@ function makeViewerHTML(doc) {
     body = '<div class="toolbar"><span>🖼️ ' + escapeHtml(doc.filename) + '</span><a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download</a><a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 OCR Text</a></div><div style="text-align:center;padding:2rem"><img src="../docs/' + encodeURIComponent(doc.filename) + '" style="max-width:100%;max-height:70vh;border-radius:8px"></div><details style="max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius:8px"><summary>📃 Lihat Hasil OCR Teks</summary><pre style="white-space:pre-wrap;margin-top:1rem">' + escapeHtml(doc.text) + '</pre></details>';
   }
 
-  return `<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHtml(doc.filename)}</title>
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; }
-    .toolbar { display:flex; align-items:center; gap:1rem; padding:10px 20px; background:#1e293b; color:#fff; flex-wrap:wrap; }
-    .toolbar span { font-weight:600; font-size:15px; }
-    .btn { color:#fff; text-decoration:none; background:#2563eb; padding:6px 12px; border-radius:4px; font-size:13px; }
-    .btn:hover { background:#1d4ed8; }
-    .md { max-width:800px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; line-height:1.8; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-    .md h1, .md h2, .md h3 { margin:1.5rem 0 0.5rem; }
-    .md pre { background:#f1f5f9; padding:1rem; border-radius:4px; overflow-x:auto; }
-    .md code { background:#f1f5f9; padding:2px 6px; border-radius:3px; }
-    .back { display:inline-block; padding:10px 20px; color:#2563eb; text-decoration:none; font-size:14px; font-weight:500; }
-  </style>
-</head>
-<body>
-  <a href="../index.html" class="back">← Kembali ke Daftar Dokumen</a>
-  ${body}
-</body>
-</html>`;
+  return '<!DOCTYPE html>' +
+'<html lang="id">' +
+'<head>' +
+'  <meta charset="UTF-8">' +
+'  <meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'  <title>' + escapeHtml(doc.filename) + '</title>' +
+'  <style>' +
+'    * { margin:0; padding:0; box-sizing:border-box; }' +
+'    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; }' +
+'    .toolbar { display:flex; align-items:center; gap:1rem; padding:10px 20px; background:#1e293b; color:#fff; flex-wrap:wrap; }' +
+'    .toolbar span { font-weight:600; font-size:15px; }' +
+'    .btn { color:#fff; text-decoration:none; background:#2563eb; padding:6px 12px; border-radius:4px; font-size:13px; }' +
+'    .btn:hover { background:#1d4ed8; }' +
+'    .md { max-width:800px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; line-height:1.8; box-shadow:0 1px 3px rgba(0,0,0,0.1); }' +
+'    .md h1, .md h2, .md h3 { margin:1.5rem 0 0.5rem; }' +
+'    .md pre { background:#f1f5f9; padding:1rem; border-radius:4px; overflow-x:auto; }' +
+'    .md code { background:#f1f5f9; padding:2px 6px; border-radius:3px; }' +
+'    .back { display:inline-block; padding:10px 20px; color:#2563eb; text-decoration:none; font-size:14px; font-weight:500; }' +
+'  </style>' +
+'</head>' +
+'<body>' +
+'  <a href="../index.html" class="back">← Kembali ke Daftar Dokumen</a>' +
+  body +
+'</body>' +
+'</html>';
 }
 
 async function build() {
