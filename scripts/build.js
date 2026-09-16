@@ -203,11 +203,28 @@ function makeIndexHTML(docs) {
 function makeViewerHTML(doc) {
   let body = '';
   if (doc.type === 'pdf') {
-    body = '<div class="toolbar"><span>📄 ' + escapeHtml(doc.filename) + '</span><a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download PDF</a><a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 Plain Text</a></div><iframe src="../pdfjs/web/viewer.html?file=' + encodeURIComponent('../docs/' + doc.filename) + '" style="width:100%;height:calc(100vh - 52px);border:none"></iframe>';
+    const pdfPath = '../docs/' + encodeURIComponent(doc.filename);
+    const pdfJsViewerUrl = '../pdfjs/web/viewer.html?file=' + encodeURIComponent('../../docs/' + doc.filename);
+
+    body = '<div class="toolbar">' +
+      '<span>📄 ' + escapeHtml(doc.filename) + '</span>' +
+      '<a href="' + pdfPath + '" class="btn" download>⬇ Download PDF</a>' +
+      '<a href="' + pdfPath + '" class="btn" target="_blank">🌐 Buka File Asli</a>' +
+      '<a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 Plain Text</a>' +
+    '</div>' +
+    '<iframe src="' + pdfJsViewerUrl + '" style="width:100%;height:calc(100vh - 54px);border:none" title="PDF Viewer"></iframe>';
   } else if (doc.type === 'md') {
-    body = '<div class="toolbar"><span>📝 ' + escapeHtml(doc.filename) + '</span><a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download</a><a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 Plain Text</a></div><div class="md">' + doc.html + '</div>';
+    body = '<div class="toolbar">' +
+      '<span>📝 ' + escapeHtml(doc.filename) + '</span>' +
+      '<a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download</a>' +
+      '<a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 Plain Text</a>' +
+    '</div><div class="md">' + doc.html + '</div>';
   } else {
-    body = '<div class="toolbar"><span>🖼️ ' + escapeHtml(doc.filename) + '</span><a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download</a><a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 OCR Text</a></div><div style="text-align:center;padding:2rem"><img src="../docs/' + encodeURIComponent(doc.filename) + '" style="max-width:100%;max-height:70vh;border-radius:8px"></div><details style="max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius:8px"><summary>📃 Lihat Hasil OCR Teks</summary><pre style="white-space:pre-wrap;margin-top:1rem">' + escapeHtml(doc.text) + '</pre></details>';
+    body = '<div class="toolbar">' +
+      '<span>🖼️ ' + escapeHtml(doc.filename) + '</span>' +
+      '<a href="../docs/' + encodeURIComponent(doc.filename) + '" class="btn" download>⬇ Download</a>' +
+      '<a href="../text/' + doc.slug + '.txt" class="btn" target="_blank">📃 OCR Text</a>' +
+    '</div><div style="text-align:center;padding:2rem"><img src="../docs/' + encodeURIComponent(doc.filename) + '" style="max-width:100%;max-height:70vh;border-radius:8px"></div><details style="max-width:800px;margin:1rem auto;padding:1rem;background:#fff;border-radius:8px"><summary>📃 Lihat Hasil OCR Teks</summary><pre style="white-space:pre-wrap;margin-top:1rem">' + escapeHtml(doc.text) + '</pre></details>';
   }
 
   return '<!DOCTYPE html>' +
@@ -218,20 +235,23 @@ function makeViewerHTML(doc) {
 '  <title>' + escapeHtml(doc.filename) + '</title>' +
 '  <style>' +
 '    * { margin:0; padding:0; box-sizing:border-box; }' +
-'    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; }' +
-'    .toolbar { display:flex; align-items:center; gap:1rem; padding:10px 20px; background:#1e293b; color:#fff; flex-wrap:wrap; }' +
-'    .toolbar span { font-weight:600; font-size:15px; }' +
-'    .btn { color:#fff; text-decoration:none; background:#2563eb; padding:6px 12px; border-radius:4px; font-size:13px; }' +
+'    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:#f4f6f8; overflow:hidden; }' +
+'    .toolbar { display:flex; align-items:center; gap:0.75rem; padding:10px 16px; background:#1e293b; color:#fff; flex-wrap:wrap; }' +
+'    .toolbar span { font-weight:600; font-size:14px; margin-right:auto; }' +
+'    .btn { color:#fff; text-decoration:none; background:#2563eb; padding:5px 10px; border-radius:4px; font-size:12px; }' +
 '    .btn:hover { background:#1d4ed8; }' +
-'    .md { max-width:800px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; line-height:1.8; box-shadow:0 1px 3px rgba(0,0,0,0.1); }' +
+'    .md { max-width:800px; margin:2rem auto; padding:2rem; background:#fff; border-radius:8px; line-height:1.8; box-shadow:0 1px 3px rgba(0,0,0,0.1); overflow-y:auto; height:calc(100vh - 100px); }' +
 '    .md h1, .md h2, .md h3 { margin:1.5rem 0 0.5rem; }' +
 '    .md pre { background:#f1f5f9; padding:1rem; border-radius:4px; overflow-x:auto; }' +
 '    .md code { background:#f1f5f9; padding:2px 6px; border-radius:3px; }' +
-'    .back { display:inline-block; padding:10px 20px; color:#2563eb; text-decoration:none; font-size:14px; font-weight:500; }' +
+'    .back { color:#94a3b8; text-decoration:none; font-size:13px; font-weight:500; margin-right:8px; }' +
+'    .back:hover { color:#fff; }' +
 '  </style>' +
 '</head>' +
 '<body>' +
-'  <a href="../index.html" class="back">← Kembali ke Daftar Dokumen</a>' +
+'  <div class="toolbar" style="background:#0f172a; border-bottom:1px solid #334155;">' +
+'    <a href="../index.html" class="back">← Kembali ke Beranda</a>' +
+'  </div>' +
   body +
 '</body>' +
 '</html>';
