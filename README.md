@@ -10,12 +10,13 @@ Simpan panduan ini! Ini adalah "buku manual" Anda untuk mengelola website dokume
 | No | Topik | Halaman |
 |----|-------|---------|
 | 1 | Menambahkan File Baru | ⬇️ di bawah |
-| 2 | Menghapus File | ⬇️ di bawah |
-| 3 | Mengganti / Update File | ⬇️ di bawah |
-| 4 | Mengecek Status Build | ⬇️ di bawah |
-| 5 | Menggunakan Fitur Search | ⬇️ di bawah |
-| 6 | Mengakses File untuk AI | ⬇️ di bawah |
-| 7 | Troubleshooting | ⬇️ di bawah |
+| 2 | Mengorganisir File dengan Folder *(Fitur Baru!)* | ⬇️ di bawah |
+| 3 | Menghapus File atau Folder | ⬇️ di bawah |
+| 4 | Mengganti / Update File | ⬇️ di bawah |
+| 5 | Mengecek Status Build | ⬇️ di bawah |
+| 6 | Menggunakan Fitur Search & Navigasi | ⬇️ di bawah |
+| 7 | Mengakses File untuk AI | ⬇️ di bawah |
+| 8 | Troubleshooting | ⬇️ di bawah |
 
 ---
 
@@ -33,27 +34,14 @@ Simpan panduan ini! Ini adalah "buku manual" Anda untuk mengelola website dokume
 
 4. Buka **Command Prompt** (tekan `Windows + R`, ketik `cmd`, Enter)
 
-5. Ketik 4 perintah ini satu per satu:
+5. Ketik perintah berikut:
 
-```
+```cmd
 cd D:\1\my-docs
-```
-*(Enter — masuk ke folder project)*
-
-```
 git add docs/
-```
-*(Enter — tandai semua file baru)*
-
-```
 git commit -m "Tambah file baru"
-```
-*(Enter — simpan perubahan)*
-
-```
 git push origin main
 ```
-*(Enter — upload ke GitHub)*
 
 6. **Selesai!** Tunggu 3-7 menit, website otomatis update.
 
@@ -63,306 +51,244 @@ git push origin main
 
 **Langkah-langkah:**
 
-1. Buka browser (bisa di HP), masuk ke:
-   👉 **`https://github.com/fajarprdn07/my-docs`**
-
+1. Buka browser: 👉 **`https://github.com/fajarprdn07/my-docs`**
 2. Klik folder **`docs`**
-
-3. Klik tombol **"Add file"** (di kanan atas daftar file)
-
-4. Pilih **"Upload files"**
-
-5. **Drag & drop** file dari komputer Anda ke area upload
-   - Atau klik **"choose your files"** untuk memilih file
-
-6. Di bagian bawah, isi pesan commit, contoh: `Tambah laporan baru`
-
-7. Klik tombol hijau **"Commit changes"**
-
-8. **Selesai!** Tunggu 3-7 menit.
+3. Klik tombol **"Add file"** (di kanan atas daftar file) → pilih **"Upload files"**
+4. **Drag & drop** file atau klik **"choose your files"**
+5. Di bagian bawah, isi pesan commit: `Tambah laporan baru`
+6. Klik tombol hijau **"Commit changes"**
+7. **Selesai!** Tunggu 3-7 menit.
 
 > ⚠️ **Keterbatasan Cara B:** Maksimal 100 file per upload, dan tidak bisa upload file >25MB via browser.
 
 ---
 
-## 2. 🗑️ MENGHAPUS FILE
+## 2. 📂 MENGORGANISIR FILE DENGAN FOLDER *(FITUR BARU)*
+
+Website sekarang mendukung struktur folder bertingkat (subfolder tanpa batas), breadcrumb, dan indikator jumlah file.
+
+### Langkah 1: Buat Folder di Laptop
+1. Buka File Explorer → masuk ke **`D:\1\my-docs\docs`**
+2. Klik kanan → **New** → **Folder**
+3. Beri nama folder, contoh: `skripsi`
+4. Buka folder `skripsi`, lalu taruh file-file PDF di dalamnya
+
+Struktur folder Anda akan menjadi seperti ini:
+```text
+docs/
+├── skripsi/
+│   ├── bab1.pdf
+│   └── bab2.pdf
+└── 0_A_Ibnudin_Fauzan_2025.pdf
+```
+
+### Langkah 2: Upload ke GitHub
+Buka Command Prompt, lalu jalankan:
+
+```cmd
+cd D:\1\my-docs
+git add docs/
+git commit -m "Tambah folder skripsi dan isinya"
+git push origin main
+```
+
+### Langkah 3: Tampilan di Website
+
+Setelah build selesai, buka: 👉 **`https://fajarprdn07.github.io/my-docs/`**
+
+**1. Halaman Utama (Home):**
+```text
+📁 Home
+
+📂 Document Repository
+
+📁 skripsi          ← KLIK untuk masuk
+   2 file
+
+📄 0_A_Ibnudin_Fauzan_2025.pdf
+```
+
+**2. Di dalam Folder `skripsi`:**
+```text
+📁 Home › 📂 skripsi
+
+📂 skripsi
+
+📄 bab1.pdf
+📄 bab2.pdf
+```
+
+### 🎯 Fitur Folder di Website:
+
+| Fitur | Keterangan |
+|---|---|
+| 📁 **Navigasi Folder** | Klik folder untuk masuk ke dalamnya |
+| 🍞 **Breadcrumb** | `Home › skripsi › lampiran` — setiap bagian jalur navigasi bisa langsung diklik untuk berpindah |
+| 🔍 **Search Global** | Mengetik di search bar akan mencari di **semua folder sekaligus** secara otomatis |
+| 🔢 **Folder Count** | Menampilkan badge jumlah file yang ada di dalam masing-masing folder |
+| 🌲 **Subfolder Tanpa Batas** | Anda bisa membuat subfolder di dalam folder (misal: `docs/skripsi/revisi/bab1.pdf`) |
+
+---
+
+## 3. 🗑️ MENGHAPUS FILE ATAU FOLDER
 
 ### Cara A: Via Laptop (Rekomendasi)
 
-**Langkah-langkah:**
+1. Buka **File Explorer** → masuk ke **`D:\1\my-docs\docs`**
+2. **Hapus file atau folder** yang tidak diinginkan (klik kanan → Delete)
+3. Buka **Command Prompt**, ketik:
 
-1. Buka **File Explorer**
-2. Masuk ke folder **`D:\1\my-docs\docs`**
-3. **Hapus file** yang tidak diinginkan (klik kanan → Delete, atau tekan tombol `Del`)
-
-4. Buka **Command Prompt**, ketik:
-
-```
+```cmd
 cd D:\1\my-docs
-```
-*(Enter)*
-
-```
 git add -A
-```
-*(Enter — `-A` artinya "deteksi semua perubahan termasuk file yang dihapus")*
-
-```
-git commit -m "Hapus file lama"
-```
-*(Enter)*
-
-```
+git commit -m "Hapus file/folder lama"
 git push origin main
 ```
-*(Enter)*
+*(Catatan: `-A` akan otomatis mendeteksi semua perubahan termasuk penghapusan file/folder)*
 
-5. **Selesai!** File akan hilang dari website setelah build selesai.
+4. **Selesai!** Item akan terhapus dari website setelah build selesai.
 
 ---
 
 ### Cara B: Via Website GitHub
 
 1. Buka **`https://github.com/fajarprdn07/my-docs`**
-2. Klik folder **`docs`**
-3. **Klik nama file** yang ingin dihapus
-4. Klik ikon **titik tiga (⋯)** di pojok kanan atas file
-5. Pilih **"Delete file"**
-6. Klik tombol hijau **"Commit changes"**
-7. **Selesai!**
+2. Masuk ke folder **`docs`** (atau subfoldernya)
+3. Klik nama file yang ingin dihapus
+4. Klik ikon **titik tiga (⋯)** di kanan atas → pilih **"Delete file"**
+5. Klik tombol hijau **"Commit changes"**
 
 ---
 
-## 3. 🔄 MENGGANTI / UPDATE FILE
+## 4. 🔄 MENGGANTI / UPDATE FILE
 
-Misalnya Anda punya file `laporan.pdf` yang sudah di-upload, lalu Anda revisi dan ingin menggantinya dengan versi baru.
+Misalnya Anda punya file `bab1.pdf` di dalam folder `skripsi/` yang ingin diganti dengan revisi baru:
 
-### Caranya:
+1. Buka folder tujuan di **`D:\1\my-docs\docs\skripsi`**
+2. Langsung **timpa (overwrite)** file lama dengan file baru (pastikan nama file sama persis)
+3. Buka Command Prompt, ketik:
 
-1. Buka folder **`D:\1\my-docs\docs`**
-2. **Hapus** file `laporan.pdf` yang lama
-3. **Copy-paste** file `laporan.pdf` yang baru (nama file harus SAMA PERSIS)
-4. Buka Command Prompt, ketik:
-
-```
+```cmd
 cd D:\1\my-docs
-```
-
-```
-git add -A
-```
-
-```
-git commit -m "Update laporan.pdf"
-```
-
-```
+git add docs/
+git commit -m "Update skripsi/bab1.pdf"
 git push origin main
 ```
 
-5. **Selesai!** Website akan otomatis memproses versi baru.
-
-> 💡 **Tips:** Jika nama file sama, Git akan otomatis mendeteksi bahwa file tersebut sudah berubah (modified). Anda tidak perlu hapus dulu, cukup **timpa (overwrite)** file lama dengan file baru, lalu jalankan `git add docs/` seperti biasa.
+4. **Selesai!** Website akan memproses versi yang terbaru.
 
 ---
 
-## 4. 🔍 MENGECEK STATUS BUILD
+## 5. 🔍 MENGECEK STATUS BUILD
 
-Setiap kali Anda push file, GitHub akan otomatis memproses. Berikut cara memantau:
+Setiap kali melakukan push, pantau proses publikasi:
 
-### Langkah-langkah:
-
-1. Buka browser: 👉 **`https://github.com/fajarprdn07/my-docs/actions`**
-
-2. Anda akan melihat daftar proses (workflow runs):
+1. Buka: 👉 **`https://github.com/fajarprdn07/my-docs/actions`**
+2. Status yang terlihat:
 
 | Ikon | Status | Arti |
-|------|--------|------|
-| 🟡 Berputar | In Progress | Sedang diproses, tunggu |
-| ✅ Centang hijau | Success | Berhasil! Website sudah update |
-| ❌ Silang merah | Failure | Ada error, perlu dicek |
+|---|---|---|
+| 🟡 Berputar | In Progress | Sedang diproses / di-generate, silakan tunggu |
+| ✅ Centang hijau | Success | Berhasil! Website sudah terupdate |
+| ❌ Silang merah | Failure | Ada kendala/error pada build |
 
-3. **Klik** pada baris proses untuk melihat detailnya
-
-4. Jika **gagal (❌)**:
-   - Klik tombol **`build`** di sebelah kiri
-   - Klik langkah yang ada tanda ❌
-   - Lihat pesan error di bagian bawah
-   - **Screenshot dan kirim ke saya**, saya akan bantu perbaiki!
+3. Jika **gagal (❌)**:
+   - Klik proses yang gagal → klik langkah yang bertanda ❌
+   - Screenshot / copy pesan error untuk diperbaiki.
 
 ---
 
-## 5. 🔎 MENGGUNAKAN FITUR SEARCH
+## 6. 🔎 MENGGUNAKAN FITUR SEARCH & NAVIGASI
 
-### Di Halaman Utama Website:
+### 1. Pencarian Global (Search Bar Utama):
+- Buka **`https://fajarprdn07.github.io/my-docs/`**
+- Ketik kata kunci pada kotak pencarian (minimal 2 karakter)
+- **Search ini bersifat Global:** Menemukan file yang cocok di **semua folder dan subfolder**
+- Hasil menampilkan:
+  - 📄 Nama file & lokasinya
+  - 📊 Jumlah halaman
+  - 📝 Cuplikan teks yang cocok (highlight kuning)
 
-1. Buka website: 👉 **`https://fajarprdn07.github.io/my-docs/`**
+### 2. Navigasi Breadcrumb:
+- Di bagian atas daftar dokumen, Anda dapat melihat jalur navigasi seperti: `Home › folder1 › folder2`
+- Klik nama folder mana saja pada breadcrumb untuk langsung kembali ke level tersebut.
 
-2. Di bagian atas ada **kotak pencarian** (search bar)
-
-3. **Ketik kata atau kalimat** yang ingin dicari, contoh:
-   - `pendahuluan`
-   - `hasil penelitian`
-   - `kesimpulan dan saran`
-
-4. Hasil pencarian akan muncul **secara langsung** saat Anda mengetik (minimal 2 huruf)
-
-5. Setiap hasil akan menampilkan:
-   - 📄 Nama file
-   - 📊 Jumlah halaman
-   - 📝 Cuplikan teks yang cocok (highlight kuning)
-
-6. **Klik nama file** untuk membuka dokumen lengkap
-
-### Di Dalam PDF Viewer:
-
-1. Setelah membuka dokumen PDF
-2. Tekan **`Ctrl + F`** di keyboard
-3. Ketik kata yang dicari
-4. PDF.js akan **highlight semua kata yang cocok** di dalam dokumen
+### 3. Pencarian di dalam PDF Viewer:
+- Saat membaca dokumen PDF, tekan **`Ctrl + F`** di keyboard untuk mencari kata di seluruh halaman PDF tersebut.
 
 ---
 
-## 6. 🤖 MENGAKSES FILE UNTUK AI
+## 7. 🤖 MENGAKSES FILE UNTUK AI
 
-Website Anda sudah **AI-ready**. Berikut cara AI bisa membaca dokumen Anda:
+Website Anda sudah terstruktur dan ramah dibaca oleh model AI (LLM):
 
-### Untuk ChatGPT / Claude / LLM lainnya:
-
-Berikan URL ini ke AI:
-```
-https://fajarprdn07.github.io/my-docs/llms.txt
-```
-AI akan membaca daftar semua dokumen Anda beserta link-nya.
-
-### Untuk membaca isi dokumen tertentu:
-
-Berikan URL plain text dokumen, contoh:
-```
-https://fajarprdn07.github.io/my-docs/text/0_A_Ibnudin_Fauzan_2025.txt
-```
-AI bisa membaca isi lengkap dokumen dalam format teks murni.
-
-### Untuk crawler / bot:
-
-File `sitemap.xml` dan `robots.txt` sudah otomatis tersedia:
-```
-https://fajarprdn07.github.io/my-docs/sitemap.xml
-https://fajarprdn07.github.io/my-docs/robots.txt
-```
+- **Index Dokumen untuk LLM:**
+  ```text
+  https://fajarprdn07.github.io/my-docs/llms.txt
+  ```
+- **Akses Teks Polos (Plain Text):**
+  ```text
+  https://fajarprdn07.github.io/my-docs/text/[nama-file].txt
+  ```
+- **Sitemap & Robots:**
+  ```text
+  https://fajarprdn07.github.io/my-docs/sitemap.xml
+  https://fajarprdn07.github.io/my-docs/robots.txt
+  ```
 
 ---
 
-## 7. 🛠️ TROUBLESHOOTING (Masalah Umum)
+## 8. 🛠️ TROUBLESHOOTING (PEMECAHAN MASALAH)
 
-### Masalah 1: `git push` ditolak / minta password
-
-**Solusi:**
-```
-git pull origin main --rebase
-git push origin main
-```
-Jika masih minta password, gunakan **Personal Access Token** (bukan password biasa).
-
----
-
-### Masalah 2: Website tidak muncul (404 Not Found)
-
-**Cek:**
-1. Buka Settings → Pages → pastikan Source = **GitHub Actions**
-2. Tunggu 1-2 menit setelah build selesai
-3. Pastikan alamat URL benar: `https://fajarprdn07.github.io/my-docs/` (pakai huruf kecil semua)
-
----
-
-### Masalah 3: File tidak muncul di website setelah push
-
-**Cek:**
-1. Buka tab **Actions**, pastikan build **berhasil (✅)**
-2. Pastikan file ada di dalam folder **`docs/`** (bukan di luar folder tersebut)
-3. Pastikan format file didukung (`.pdf`, `.md`, `.png`, `.jpg`, dll)
-4. Refresh browser dengan **`Ctrl + Shift + R`** (hard refresh)
-
----
-
-### Masalah 4: Build gagal (❌)
-
-**Langkah:**
-1. Buka tab **Actions** → klik build yang gagal
-2. Klik **`build`** → klik langkah yang merah
-3. **Copy-paste pesan error-nya ke saya**
-4. Saya akan perbaiki kodenya untuk Anda
-
----
-
-### Masalah 5: PDF viewer gelap / kosong
-
-**Cek:**
-1. Coba klik tombol **"🌐 Buka File Asli"** di toolbar atas
-2. Jika file asli bisa dibuka, berarti masalah di PDF.js viewer
-3. Kirim screenshot ke saya untuk investigasi lebih lanjut
-
----
-
-### Masalah 6: Search tidak menemukan kata yang seharusnya ada
-
-**Penyebab mungkin:**
-1. File PDF adalah hasil scan gambar (bukan teks) → OCR mungkin tidak 100% akurat
-2. Build belum selesai → tunggu sampai centang hijau ✅
-3. Cache browser → tekan **`Ctrl + Shift + R`** untuk hard refresh
+| Masalah | Solusi Cepat |
+|---|---|
+| **`git push` ditolak / Out of sync** | Jalankan `git pull origin main --rebase`, lalu ulangi `git push origin main`. |
+| **Halaman 404 Not Found** | Cek Settings → Pages di repo, pastikan Build and deployment Source diset ke **GitHub Actions**. |
+| **File/Folder tidak muncul** | Pastikan build di tab **Actions** sudah centang hijau ✅, lalu lakukan hard refresh di browser dengan **`Ctrl + Shift + R`**. |
+| **Folder kosong tidak muncul di web** | Git tidak membaca folder yang benar-benar kosong. Taruh minimal 1 file di dalam folder tersebut. |
+| **PDF Viewer gelap / tidak termuat** | Gunakan tombol **"🌐 Buka File Asli"** di toolbar atas viewer. |
 
 ---
 
 ## 📌 RINGKASAN PERINTAH GIT (Cheat Sheet)
 
-Simpan daftar ini! Ini semua perintah yang Anda butuhkan:
-
 | Perintah | Fungsi |
-|----------|--------|
-| `cd D:\1\my-docs` | Masuk ke folder project |
-| `git add docs/` | Tandai file baru/berubah di folder docs |
-| `git add -A` | Tandai SEMUA perubahan (termasuk file dihapus) |
-| `git commit -m "pesan"` | Simpan perubahan dengan pesan |
-| `git push origin main` | Upload ke GitHub |
-| `git pull origin main --rebase` | Download perubahan dari GitHub |
-| `git status` | Lihat file apa saja yang berubah |
+|---|---|
+| `cd D:\1\my-docs` | Masuk ke direktori repository lokal |
+| `git status` | Melihat file/folder mana saja yang baru, diedit, atau dihapus |
+| `git add docs/` | Menandai perubahan khusus di dalam folder `docs/` |
+| `git add -A` | Menandai seluruh perubahan (termasuk file/folder yang dihapus) |
+| `git commit -m "pesan perubahan"` | Menyimpan catatan riwayat perubahan |
+| `git push origin main` | Mengirim data terbaru ke GitHub untuk di-build |
+| `git pull origin main --rebase` | Mengambil pembaruan terbaru dari GitHub |
 
 ---
 
 ## 🔄 WORKFLOW HARIAN (Ringkasan)
 
 ```
-┌─────────────────────────────────────────────┐
-│          WORKFLOW HARIAN ANDA               │
-│                                             │
-│  1. Taruh file di folder D:\1\my-docs\docs  │
-│              ↓                              │
-│  2. Buka Command Prompt                     │
-│              ↓                              │
-│  3. cd D:\1\my-docs                         │
-│     git add docs/                           │
-│     git commit -m "pesan"                   │
-│     git push origin main                    │
-│              ↓                              │
-│  4. Tunggu 3-7 menit                        │
-│              ↓                              │
-│  5. Buka fajarprdn07.github.io/my-docs      │
-│     → File baru sudah ada! ✅               │
-└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                 WORKFLOW HARIAN ANDA                        │
+│                                                             │
+│  1. Atur file/folder di: D:\1\my-docs\docs                  │
+│              ↓                                              │
+│  2. Buka Command Prompt, jalankan:                          │
+│     cd D:\1\my-docs                                         │
+│     git add -A                                              │
+│     git commit -m "Update dokumen dan folder"               │
+│     git push origin main                                    │
+│              ↓                                              │
+│  3. Tunggu 3-7 menit (Actions: ✅)                          │
+│              ↓                                              │
+│  4. Buka https://fajarprdn07.github.io/my-docs/             │
+│     → Folder, file & search sudah aktif! 🎉                 │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 💡 TIPS PENTING
 
-1. **Jangan edit file di folder `scripts/` atau `.github/`** kecuali saya yang menyuruh. Folder tersebut adalah "mesin" website Anda.
-
-2. **Folder `docs/` adalah satu-satunya folder yang perlu Anda sentuh** untuk menambah/menghapus dokumen.
-
-3. **Nama file sebaiknya tidak terlalu panjang** dan hindari simbol aneh. Contoh bagus: `skripsi-bab1.pdf`, `laporan-keuangan-2024.pdf`.
-
-4. **Ukuran file maksimal** yang disarankan: 50MB per file. Di atas itu bisa menyebabkan build sangat lambat.
-
-5. **Backup:** Semua file Anda tersimpan aman di GitHub. Jika laptop rusak, Anda bisa download ulang semua file dari `https://github.com/fajarprdn07/my-docs`.
-
----
+1. **Folder Kosong:** Git tidak mendeteksi folder yang kosong. Agar folder muncul di website, pastikan ada minimal 1 file di dalamnya.
+2. **Penamaan Folder & File:** Gunakan huruf kecil, angka, serta tanda strip `-` atau underscore `_` (contoh: `laporan-2025`, `skripsi_bab1.pdf`) untuk meminimalisir error link URL.
+3. **Folder Inti:** Jangan mengubah file di dalam `.github/` atau `scripts/` kecuali ada penyesuaian sistem. Cukup kelola isi folder `docs/`.
